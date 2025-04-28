@@ -5,13 +5,14 @@ echo "Update the system and install security tools"
 echo 
 sudo apt update && sudo apt install -y ufw nmap tcpdump snort gpg
 
-
+echo
 
 echo "Activate the Snort tool to monitor network traffic and detect intrusions"
 echo
 sudo systemctl stop snort 2>/dev/null
 sudo snort -A console -i $(ip route | grep default | awk '{print $5}') -c /etc/snort/snort.conf &
 
+echo
 
 echo "Configure iptables rules to allow access on ports 22 and 80, while blocking all other connections"
 echo
@@ -19,12 +20,14 @@ sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
 sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
 sudo iptables -A INPUT -j DROP
 
+echo
 
 echo "Configure iptables to allow access from the 192.168.1.0/24 network and block access from the 10.0.0.0/8 network"
 echo
 sudo iptables -A INPUT -s 192.168.1.0/24 -j ACCEPT
 sudo iptables -A INPUT -s 10.0.0.0/8 -j DROP
 
+echo
 
 echo "Enable UFW firewall to allow connections on ports 22 and 80 while denying other connections"
 sudo ufw enable
@@ -32,38 +35,43 @@ sudo ufw allow 22
 sudo ufw allow 80
 sudo ufw default deny incoming
 
+echo
 
 echo "Block access from the 10.10.10.0/24 network and allow access from the 192.168.1.0/24 network using UFW"
 echo
 sudo ufw deny from 10.10.10.0/24
 sudo ufw allow from 192.168.1.0/24
 
+echo
 
 echo "Testing connectivity to the cloud DNS server 8.8.8.8 using the ping command"
 echo
 ping -c 4 8.8.8.8
 
-
+echo
 
 echo "Encrypt secret.txt file using AES256 algorithm via GPG"
 echo
 echo  > secret.txt
 gpg --symmetric --cipher-algo AES256 secret.txt
 
+echo
 
 echo "Scan the local system using Nmap to discover open ports"
 echo
 sudo nmap -sS 127.0.0.1
 
-
+echo
 
 echo "Capture and analyze network packets for 10 seconds using tcpdump"
 echo
 sudo timeout 10 tcpdump -i $(ip route | grep default | awk '{print $5}')
 
+echo
 
 echo "Simulate an attack on port 22 using Nmap, with alerts if Snort is running"
 echo
 sudo nmap -sS -p 22 127.0.0.1
+echo
 echo "If it works the snort result will appear in the console"
 
